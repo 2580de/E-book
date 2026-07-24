@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bookhub — Choose your interests</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .cat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:36px; }
+  @media (max-width:820px){ .cat-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .cat-grid{ grid-template-columns:1fr; } }
+
+  .cat-card{
+    position:relative; padding:22px 20px 26px; background:var(--ink-card);
+    border:1px solid var(--ink-line); border-radius:var(--radius);
+    display:flex; flex-direction:column; gap:6px; text-align:left;
+    transition:border-color .15s, background .15s;
+  }
+  .cat-card:hover{ border-color:var(--paper-dim); }
+  .cat-card input{ position:absolute; opacity:0; }
+  .cat-card .tick{
+    position:absolute; top:16px; right:16px; width:20px; height:20px; border-radius:50%;
+    border:1px solid var(--ink-line); display:flex; align-items:center; justify-content:center;
+    font-size:12px; color:transparent;
+  }
+  .cat-card input:checked ~ .tick{ background:var(--amber); border-color:var(--amber); color:#1a1406; }
+  .cat-card input:checked ~ .cat-name{ color:var(--amber); }
+  .cat-card:has(input:checked){ background:rgba(227,162,61,0.07); border-color:var(--amber-dim); }
+
+  .cat-name{ font-family:var(--serif); font-size:19px; font-weight:600; }
+  .cat-desc{ font-size:13px; color:var(--paper-dim); }
+  .cat-meta{ font-family:var(--mono); font-size:11px; color:var(--paper-dim); margin-top:8px; }
+
+  .format-row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
+  .format-chip{
+    display:flex; align-items:center; gap:8px; padding:10px 16px;
+    border:1px solid var(--ink-line); border-radius:20px; font-size:13px; cursor:pointer;
+    background:var(--ink-card);
+  }
+  .format-chip input{ accent-color:var(--amber); }
+
+  .sticky-bar{
+    position:sticky; bottom:0; margin-top:48px; padding:18px 0;
+    background:linear-gradient(0deg,var(--ink) 60%,transparent);
+    display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  .sticky-bar p{ font-size:13px; color:var(--paper-dim); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="dot"></span>Bookhub</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="categories.html" class="active">Categories</a>
+      <a href="search.html">Search</a>
+      <a href="index.html#news">News</a>
+    </div>
+    <a class="nav-cta" href="search.html">Skip for now</a>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</nav>
+
+<header class="hero" style="padding:64px 0 40px;">
+  <div class="wrap">
+    <p class="hero-eyebrow">Step 1 of 1 · Takes 30 seconds</p>
+    <h1 style="font-size:clamp(32px,4.4vw,48px);">What do you want<br>on your <em>shelf?</em></h1>
+    <p>Pick as many as you like. This shapes your home feed, search results, and the news you see — you can change it any time.</p>
+  </div>
+</header>
+
+<section class="section" style="border-bottom:none;">
+  <div class="wrap">
+
+    <div class="cat-grid">
+      <label class="cat-card" id="fiction">
+        <input type="checkbox" checked>
+        <span class="tick">✓</span>
+        <span class="cat-name">Fiction</span>
+        <span class="cat-desc">Literary, contemporary, and character-driven novels.</span>
+        <span class="cat-meta">2,140 TITLES</span>
+      </label>
+
+      <label class="cat-card" id="scifi">
+        <input type="checkbox">
+        <span class="tick">✓</span>
+        <span class="cat-name">Sci-Fi &amp; Fantasy</span>
+        <span class="cat-desc">Other worlds, future tech, and epic series.</span>
+        <span class="cat-meta">940 TITLES</span>
+      </label>
+
+      <label class="cat-card" id="mystery">
+        <input type="checkbox">
+        <span class="tick">✓</span>
+        <span class="cat-name">Mystery &amp; Thriller</span>
+        <span class="cat-desc">Crime, suspense, and page-turning plots.</span>
+        <span class="cat-meta">1,050 TITLES</span>
+      </label>
+
+      <label class="cat-card" id="biography">
+        <input type="checkbox">
+        <span class="tick">✓</span>
+        <span class="cat-name">Biography &amp; Memoir</span>
+        <span class="cat-desc">Real lives, told first-hand or by others.</span>
+        <span class="cat-meta">610 TITLES</span>
+      </label>
+
+      <label class="cat-card" id="history">
+        <input type="checkbox">
+        <span class="tick">✓</span>
+        <span class="cat-name">History</span>
+        <span class="cat-desc">Events, eras, and the people who shaped them.</span>
+        <span class="cat-meta">870 TITLES</span>
+      </label>
+
+      <label class="cat-card" id="business">
+        <input type="checkbox">
+        <span class="tick">✓</span>
+        <span class="cat-name">Business &amp; Economics</span>
+        <span class="cat-desc">Strategy, money, and how markets move.</span>
+        <span class="cat-meta">520 TITLES</span>
+      </label>
+
+      <label class="cat-card" id="poetry">
+        <input type="checkbox">
+        <span class="tick">✓</span>
+        <span class="cat-name">Poetry</span>
+        <span class="cat-desc">Short form, verse, and spoken-word collections.</span>
+        <span class="cat-meta">310 TITLES</span>
+      </label>
+
+      <label class="cat-card" id="selfhelp">
+        <input type="checkbox">
+        <span class="tick">✓</span>
+        <span class="cat-name">Self-Help &amp; Growth</span>
+        <span class="cat-desc">Habits, mindset, and practical change.</span>
+        <span class="cat-meta">460 TITLES</span>
+      </label>
+
+      <label class="cat-card" id="kids">
+        <input type="checkbox">
+        <span class="tick">✓</span>
+        <span class="cat-name">Children &amp; YA</span>
+        <span class="cat-desc">Picture books through young-adult fiction.</span>
+        <span class="cat-meta">780 TITLES</span>
+      </label>
+    </div>
+
+    <div class="section-head" style="margin-top:48px; margin-bottom:0;">
+      <h2 style="font-size:20px;">How do you like to take it in?</h2>
+    </div>
+    <div class="format-row">
+      <label class="format-chip"><input type="checkbox" checked> Text books</label>
+      <label class="format-chip"><input type="checkbox" checked> Audiobooks</label>
+      <label class="format-chip"><input type="checkbox"> Video books</label>
+      <label class="format-chip"><input type="checkbox"> Articles &amp; essays</label>
+    </div>
+
+    <div class="sticky-bar">
+      <p>4 interests selected — you can refine these later in Settings.</p>
+      <div style="display:flex; gap:12px;">
+        <a href="search.html" class="btn btn-ghost">Skip</a>
+        <a href="index.html" class="btn btn-amber">Save &amp; build my shelf</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <p>Bookhub — books, audiobooks &amp; video books in one shelf.</p>
+    <p>Template preview · page 2 of 3</p>
+  </div>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

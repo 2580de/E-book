@@ -1,0 +1,15 @@
+{
+  "name": "bookhub",
+  "version": "1.0.0",
+  "description": "A web platform for discovering books, audiobooks, video books, and related news/articles — with category-based personalization.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prisma": "^7.9.0"
+  }
+}
