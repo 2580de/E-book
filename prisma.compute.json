@@ -1,0 +1,13 @@
+{
+  "region": "eu-central-1",
+  "app": {
+    "name": "bookhub",
+    "framework": "bun",
+    "entry": "Prisma",
+    "httpPort": 3000,
+    "build": {
+      "command": null,
+      "outputDirectory": "."
+    }
+  }
+}
