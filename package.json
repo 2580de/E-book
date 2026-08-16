@@ -11,5 +11,8 @@
   "license": "ISC",
   "devDependencies": {
     "prisma": "^7.9.0"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
   }
 }
