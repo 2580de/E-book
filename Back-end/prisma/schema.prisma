@@ -1,25 +1,21 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  runtime  = "nodejs"
+  moduleFormat = "esm"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
-// ============================================================
-// These models mirror supabase/schema_user_data.sql and the
-// core schema in README.md. Supabase Auth owns `auth.users` —
-// Prisma doesn't manage that table, so relations to it are
-// stored as plain `userId` uuid fields, not Prisma relations.
-// ============================================================
+// Supabase Auth owns auth.users. Prisma models the public application
+// tables and keeps auth-owned UUIDs as scalar fields.
 
 model Profile {
   id                 String   @id @db.Uuid
   selectedCategories String[] @map("selected_categories")
   selectedFormats    String[] @map("selected_formats")
-
   @@map("profiles")
 }
 
@@ -28,34 +24,31 @@ model Book {
   title     String
   author    String?
   category  String?
-  format    String? // 'book' | 'audio' | 'video'
+  format    String?
   coverUrl  String?  @map("cover_url")
   blurb     String?
-
   @@map("books")
 }
 
 model Article {
   id          String   @id @default(uuid()) @db.Uuid
   title       String
-  kind        String? // 'news' | 'interview' | 'sponsored'
+  kind        String?
   publishedAt DateTime @default(now()) @map("published_at")
   url         String?
-
   @@map("articles")
 }
 
 model UserSession {
-  id             String    @id @default(uuid()) @db.Uuid
-  userId         String?   @map("user_id") @db.Uuid
-  sessionToken   String?   @unique @map("session_token")
-  deviceLabel    String?   @map("device_label")
-  ipAddress      String?   @map("ip_address")
-  cookieConsent  Json      @default("{}") @map("cookie_consent")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  lastSeenAt     DateTime  @default(now()) @map("last_seen_at")
-  expiresAt      DateTime? @map("expires_at")
-
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String?   @map("user_id") @db.Uuid
+  sessionToken  String?   @unique @map("session_token")
+  deviceLabel   String?   @map("device_label")
+  ipAddress     String?   @map("ip_address")
+  cookieConsent Json      @default("{}") @map("cookie_consent")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  lastSeenAt    DateTime  @default(now()) @map("last_seen_at")
+  expiresAt     DateTime? @map("expires_at")
   @@map("user_sessions")
 }
 
@@ -65,7 +58,6 @@ model UserCache {
   cacheValue Json     @map("cache_value")
   updatedAt  DateTime @default(now()) @map("updated_at")
   expiresAt  DateTime @default(dbgenerated("(now() + interval '30 days')")) @map("expires_at")
-
   @@id([userId, cacheKey])
   @@map("user_cache")
 }
@@ -73,12 +65,11 @@ model UserCache {
 model UserActivity {
   id           BigInt   @id @default(autoincrement())
   userId       String?  @map("user_id") @db.Uuid
-  activityType String   @map("activity_type") // 'search' | 'view' | 'play' | 'save' | 'select_category'
-  targetType   String?  @map("target_type")   // 'book' | 'article' | 'category'
+  activityType String   @map("activity_type")
+  targetType   String?  @map("target_type")
   targetId     String?  @map("target_id") @db.Uuid
   metadata     Json     @default("{}")
   createdAt    DateTime @default(now()) @map("created_at")
-
   @@map("user_activity")
 }
 
@@ -87,7 +78,6 @@ model UserData {
   dataKey   String   @map("data_key")
   dataValue Json     @map("data_value")
   updatedAt DateTime @default(now()) @map("updated_at")
-
   @@id([userId, dataKey])
   @@map("user_data")
 }
