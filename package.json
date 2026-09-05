@@ -13,9 +13,7 @@
     "db:sync": "npm run db:pull && npm run db:generate",
     "db:validate": "prisma validate --config prisma.config.ts"
   },
-  "engines": {
-    "node": ">=22.0.0"
-  },
+  "engines": { "node": ">=22.0.0" },
   "dependencies": {
     "@supabase/supabase-js": "^2.115.0",
     "@prisma/client": "^7.10.0",
@@ -25,6 +23,6 @@
   "devDependencies": {
     "dotenv": "^17.2.2",
     "prisma": "^7.10.0",
-    "vite": "^7.0.0"
+    "vite": "^8.2.2"
   }
 }
