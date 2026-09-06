@@ -1,109 +1,125 @@
 # Bookhub
 
-A web platform for discovering books, audiobooks, video books, and related news/articles — with category-based personalization.
+Bookhub is a web platform for discovering books, audiobooks, video books and related articles, with room for category-based personalization.
 
-## Stack
-- **Frontend:** plain HTML / CSS / JS (no build step yet)
-- **Hosting:** Vercel (auto-deploys from `main`, PR previews for review)
-- **Backend:** Supabase (Auth + Postgres)
+## Current architecture
+
+```text
+Browser
+  └─ Front-end/assets (HTML + CSS + JS)
+       └─ Supabase browser client
+            ├─ Supabase Auth
+            └─ PostgreSQL + RLS
+
+Server-side work
+  └─ Backend / future API routes
+       └─ Prisma
+            └─ PostgreSQL
+
+Deployment
+  └─ Vercel
+```
+
+**Frontend:** plain HTML/CSS/JavaScript. **Data/Auth:** Supabase. **Server-side ORM:** Prisma. **Hosting:** Vercel.
+
+Prisma is never imported into browser code. Database passwords, `DATABASE_URL`, `DIRECT_URL`, and service-role credentials must remain server-side.
 
 ## Project structure
-```
-bookhub/
-├── index.html          # home page
-├── categories.html     # interest/category selection
-├── search.html         # search + filters
-├── css/style.css        # shared design tokens & styles
-├── js/
-│   ├── supabaseClient.js   # Supabase connection (fill in your keys)
-│   └── app.js              # data functions (search, save interests, featured books)
-├── vercel.json          # clean URL routing for Vercel
-└── .env.example         # documents required Supabase keys
+
+```text
+E-book/
+├── Front-end/
+│   └── assets/
+│       ├── index.html
+│       ├── categories.html
+│       ├── search.html
+│       ├── book.html
+│       ├── profile.html
+│       ├── about.html
+│       ├── help.html
+│       ├── css/
+│       │   └── style.css
+│       └── js/
+│           ├── app.js
+│           ├── supabase.js
+│           └── supabaseClient.js   # legacy placeholder; app.js no longer imports this
+├── Back-end/
+│   ├── prisma/
+│   │   └── schema.prisma
+│   └── supabase/
+│       └── schema_user_data.sql
+├── vercel.json
+├── .env.example
+└── CONTRIBUTING_FRONTEND.md
 ```
 
-## Getting started (local)
-No build step needed — just open `index.html` in a browser, or run a local server:
+## Vercel
+
+The frontend intentionally remains under `Front-end/assets`. `vercel.json` maps clean public routes such as `/`, `/search`, `/book`, `/about`, `/help`, and `/profile` to those HTML files and maps `/css/*` and `/js/*` to their frontend asset directories.
+
+For a Vercel project using the repository root, use **Framework Preset: Other** and no build command. Do not set the Vercel Root Directory to `Front-end/assets` unless the deployment configuration is moved there as well.
+
+## Supabase
+
+The E-book Supabase project currently contains `profiles`, `books`, `articles`, and `bookmarks`, all with RLS enabled. The browser client uses the project's public URL and publishable key. Those credentials are intended for browser use; database credentials and service-role keys are not.
+
+The current `books` columns are: `id`, `title`, `author`, `description`, `category`, `format`, `cover_image_url`, `content_url`, `published_year`, and `created_at`.
+
+The frontend now reads these real column names. The database currently has no book rows, so the home and search pages correctly show an empty state until catalog data is added.
+
+## Frontend data flow
+
+- `index.html` loads featured books from Supabase.
+- `search.html` searches title, author and description in `books`.
+- `book.html?id=<uuid>` loads one book from Supabase.
+- `categories.html` stores current preferences in browser storage until authenticated profile persistence is deliberately enabled.
+- `profile.html` displays those browser preferences.
+
+## Supabase vs Prisma maintenance
+
+Treat Supabase PostgreSQL as the source of truth for the live database schema and RLS policies.
+
+When a schema change is needed:
+
+1. Decide whether the change belongs to the live database.
+2. Apply the SQL as a tracked Supabase migration.
+3. Verify RLS/policies and test the affected queries.
+4. Run `npx prisma db pull` against the same database.
+5. Run `npx prisma generate`.
+6. Review the generated Prisma schema before committing.
+
+Do not independently change `schema.prisma` and the Supabase schema and assume they will remain synchronized. Prisma does not replace Supabase RLS policy management.
+
+The current Prisma schema is aligned to the live application tables: `Profile`, `Book`, `Article`, and `Bookmark`. Supabase Auth owns `auth.users`.
+
+## Local development
+
 ```bash
-npx serve .
+npm install
+npx serve Front-end/assets
 ```
 
-## Connecting Supabase
-1. Create a project at https://supabase.com
-2. Go to **Project Settings → API** and copy the **Project URL** and **anon public key**
-3. Open `js/supabaseClient.js` and replace `YOUR_SUPABASE_PROJECT_URL` and `YOUR_SUPABASE_ANON_KEY`
-4. Never commit real keys to a public repo — if this repo is public, ask about switching to a bundler (Vite) so keys can be loaded from `.env.local` instead.
+Or use any local static HTTP server. Opening HTML directly with `file://` is not recommended for module imports and browser API behaviour.
 
-### Suggested tables
-```sql
--- profiles: one row per user, links to Supabase Auth
-create table profiles (
-  id uuid references auth.users primary key,
-  selected_categories text[],
-  selected_formats text[]
-);
+## Git collaboration
 
--- books: the core catalog
-create table books (
-  id uuid default gen_random_uuid() primary key,
-  title text not null,
-  author text,
-  category text,
-  format text,       -- 'book' | 'audio' | 'video'
-  cover_url text,
-  blurb text
-);
+Before editing:
 
--- articles: news, interviews, ads
-create table articles (
-  id uuid default gen_random_uuid() primary key,
-  title text not null,
-  kind text,          -- 'news' | 'interview' | 'sponsored'
-  published_at timestamptz default now(),
-  url text
-);
-```
-Enable Row Level Security on `profiles` so users can only read/write their own row.
-
-## Deploying to Vercel
-1. Push this repo to GitHub (already done)
-2. In Vercel: **Add New → Project → Import** this repo
-3. Framework preset: **Other** (static site, no build command needed)
-4. Every push to `main` deploys to production; every PR gets its own preview URL
-
-## Pages built so far
-- `index.html` — home / discovery feed
-- `categories.html` — user interest & format selection
-- `search.html` — search with filters across books, audiobooks, video books, articles
-
-## Next up
-- Book detail page
-- Audiobook / video player page
-- Auth (sign up / log in) wired to Supabase
-- Dedicated news & ads page
-
-## ORM (Prisma) — server-side only
-
-Prisma sits alongside the static pages for anything server-side: migrations, seed scripts, or a future API route. It is **not** used by the browser pages directly (those keep using `js/supabaseClient.js`).
-
-Files already in the repo:
-- `prisma/schema.prisma` — models mapped to every table in `supabase/schema_user_data.sql` plus `profiles`/`books`/`articles`
-- `.env.example` — includes `DATABASE_URL` (pooled, for runtime) and `DIRECT_URL` (direct, for migrations)
-
-### Finish the setup locally
 ```bash
-npm install prisma --save-dev
-npx prisma init   # only if starting fresh — schema.prisma is already provided here
+git pull --rebase origin main
+git status
 ```
-1. Copy `.env.example` to `.env.local`, fill in your Supabase project ref and DB password (**Project Settings → Database → Connection string**)
-2. Since the tables already exist (created via `supabase/schema_user_data.sql`), pull them into Prisma instead of migrating:
-   ```bash
-   npx prisma db pull      # confirms schema.prisma matches the live DB
-   npx prisma generate     # generates the Prisma Client
-   ```
-3. Going forward, prefer editing SQL directly in Supabase (keeps RLS policies visible/manageable there) and running `prisma db pull` to resync `schema.prisma`, rather than using `prisma migrate` — Prisma migrations don't manage RLS policies.
 
-### Optional: Agent Skills for Supabase
+After editing:
+
 ```bash
-npx skills add supabase/agent-skills
+git status
+git diff
+git add .
+git commit -m "describe the focused change"
+git push origin <your-branch>
 ```
-Gives AI coding tools (like Claude Code) ready-made context for working with this Supabase project more accurately.
+
+Do not force-push shared branches. Prefer a feature branch and pull request for significant work.
+
+See `CONTRIBUTING_FRONTEND.md` for the frontend collaborator workflow.
