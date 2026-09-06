@@ -1,18 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12141C">
+  <meta name="description" content="Bookhub — discover books, audiobooks, video books and articles in one shelf.">
   <title>Bookhub — Find your next read, listen, or watch</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-
-  <nav class="nav">
+  <nav class="nav" aria-label="Primary navigation">
     <div class="wrap">
-      <a class="brand" href="index.html"><span class="dot"></span>Bookhub</a>
+      <a class="brand" href="index.html"><span class="dot" aria-hidden="true"></span>Bookhub</a>
       <div class="nav-links">
         <a href="index.html" class="active">Home</a>
         <a href="categories.html">Categories</a>
@@ -20,26 +19,25 @@
         <a href="#news">News</a>
       </div>
       <a class="nav-cta" href="categories.html">Choose your interests</a>
-      <button class="nav-toggle" aria-label="Menu">☰</button>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
     </div>
   </nav>
 
   <header class="hero">
-    <div class="wrap">
+    <div class="wrap" data-reveal>
       <p class="hero-eyebrow">Books · Audiobooks · Video books · Articles</p>
       <h1>One shelf for <em>everything</em><br>you read, hear, and watch.</h1>
-      <p>Tell us what you're into and Bookhub brings together books, audiobooks, video adaptations, author interviews,
-        and the news around them — in one place.</p>
+      <p>Tell us what you're into and Bookhub brings together books, audiobooks, video adaptations, author interviews, and the news around them — in one place.</p>
       <form class="search-bar" action="search.html" method="get">
         <label class="sr-only" for="q">Search books, authors, or articles</label>
-        <input id="q" name="q" type="text" placeholder="Search a title, author, or article…">
+        <input id="q" name="q" type="search" placeholder="Search a title, author, or article…" autocomplete="off">
         <button type="submit">Search</button>
       </form>
     </div>
   </header>
 
   <section class="section" id="categories">
-    <div class="wrap">
+    <div class="wrap" data-reveal>
       <div class="section-head">
         <h2>Pick what pulls you in</h2>
         <a class="see-all" href="categories.html">All categories →</a>
@@ -58,75 +56,36 @@
   </section>
 
   <section class="section" id="picks">
-    <div class="wrap">
+    <div class="wrap" data-reveal>
       <div class="section-head">
         <h2>Picked for new readers</h2>
         <a class="see-all" href="search.html">Browse all →</a>
       </div>
       <div class="grid">
-        <article class="book-card">
-          <div class="book-cover"><span class="fmt-tag">Book</span></div>
-          <h3 class="book-title">The Quiet Coast</h3>
-          <p class="book-author">Nadia Ferreira</p>
-        </article>
-        <article class="book-card">
-          <div class="book-cover"><span class="fmt-tag">Audio</span></div>
-          <h3 class="book-title">Signals in the Dark</h3>
-          <p class="book-author">Tomasz Werner</p>
-        </article>
-        <article class="book-card">
-          <div class="book-cover"><span class="fmt-tag">Video</span></div>
-          <h3 class="book-title">Letters from Home</h3>
-          <p class="book-author">Amara Okoye</p>
-        </article>
-        <article class="book-card">
-          <div class="book-cover"><span class="fmt-tag">Book</span></div>
-          <h3 class="book-title">The Last Ledger</h3>
-          <p class="book-author">Hiro Sasaki</p>
-        </article>
+        <article class="book-card"><div class="book-cover"><span class="fmt-tag">Book</span></div><h3 class="book-title">The Quiet Coast</h3><p class="book-author">Nadia Ferreira</p></article>
+        <article class="book-card"><div class="book-cover"><span class="fmt-tag">Audio</span></div><h3 class="book-title">Signals in the Dark</h3><p class="book-author">Tomasz Werner</p></article>
+        <article class="book-card"><div class="book-cover"><span class="fmt-tag">Video</span></div><h3 class="book-title">Letters from Home</h3><p class="book-author">Amara Okoye</p></article>
+        <article class="book-card"><div class="book-cover"><span class="fmt-tag">Book</span></div><h3 class="book-title">The Last Ledger</h3><p class="book-author">Hiro Sasaki</p></article>
       </div>
     </div>
   </section>
 
   <section class="section" id="news">
-    <div class="wrap">
+    <div class="wrap" data-reveal>
       <div class="section-head">
         <h2>News &amp; releases</h2>
-        <a class="see-all" href="#">All news →</a>
+        <a class="see-all" href="search.html">All news →</a>
       </div>
       <div class="grid">
-        <article class="book-card">
-          <div class="book-cover" style="aspect-ratio:4/3;"><span class="fmt-tag">News</span></div>
-          <h3 class="book-title">Ferreira announces sequel to The Quiet Coast</h3>
-          <p class="book-author">2 days ago</p>
-        </article>
-        <article class="book-card">
-          <div class="book-cover" style="aspect-ratio:4/3;"><span class="fmt-tag">Sponsored</span></div>
-          <h3 class="book-title">Get 3 months of audiobooks free</h3>
-          <p class="book-author">Advertisement</p>
-        </article>
-        <article class="book-card">
-          <div class="book-cover" style="aspect-ratio:4/3;"><span class="fmt-tag">News</span></div>
-          <h3 class="book-title">This year's mystery shortlist is out</h3>
-          <p class="book-author">5 days ago</p>
-        </article>
-        <article class="book-card">
-          <div class="book-cover" style="aspect-ratio:4/3;"><span class="fmt-tag">News</span></div>
-          <h3 class="book-title">Sasaki's Ledger is heading to screen</h3>
-          <p class="book-author">1 week ago</p>
-        </article>
+        <article class="book-card"><div class="book-cover landscape"><span class="fmt-tag">News</span></div><h3 class="book-title">Ferreira announces sequel to The Quiet Coast</h3><p class="book-author">2 days ago</p></article>
+        <article class="book-card"><div class="book-cover landscape"><span class="fmt-tag">Sponsored</span></div><h3 class="book-title">Get 3 months of audiobooks free</h3><p class="book-author">Sponsored content</p></article>
+        <article class="book-card"><div class="book-cover landscape"><span class="fmt-tag">News</span></div><h3 class="book-title">This year's mystery shortlist is out</h3><p class="book-author">5 days ago</p></article>
+        <article class="book-card"><div class="book-cover landscape"><span class="fmt-tag">News</span></div><h3 class="book-title">Sasaki's Ledger is heading to screen</h3><p class="book-author">1 week ago</p></article>
       </div>
     </div>
   </section>
 
-  <footer class="footer">
-    <div class="wrap">
-      <p>Bookhub — books, audiobooks &amp; video books in one shelf.</p>
-      <p>Template preview · page 1 of 3</p>
-    </div>
-  </footer>
-
-  <script type="module" src="js/app.js"></script>
+  <footer class="footer"><div class="wrap"><p>Bookhub — books, audiobooks &amp; video books in one shelf.</p><p>Discovery platform</p></div></footer>
+  <script type="module" src="js/main.js"></script>
 </body>
-
 </html>
