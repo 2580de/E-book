@@ -2,8 +2,14 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/categories", "destination": "/categories.html" },
-    { "source": "/search", "destination": "/search.html" }
+    { "source": "/", "destination": "/Front-end/assets/index.html" },
+    { "source": "/categories", "destination": "/Front-end/assets/categories.html" },
+    { "source": "/search", "destination": "/Front-end/assets/search.html" },
+    { "source": "/book", "destination": "/Front-end/assets/book.html" },
+    { "source": "/about", "destination": "/Front-end/assets/about.html" },
+    { "source": "/help", "destination": "/Front-end/assets/help.html" },
+    { "source": "/profile", "destination": "/Front-end/assets/profile.html" },
+    { "source": "/css/:path*", "destination": "/Front-end/assets/css/:path*" },
+    { "source": "/js/:path*", "destination": "/Front-end/assets/js/:path*" }
   ]
 }
