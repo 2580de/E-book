@@ -9,6 +9,12 @@
     { "source": "/about", "destination": "/Front-end/assets/about.html" },
     { "source": "/help", "destination": "/Front-end/assets/help.html" },
     { "source": "/profile", "destination": "/Front-end/assets/profile.html" },
+    { "source": "/categories.html", "destination": "/Front-end/assets/categories.html" },
+    { "source": "/search.html", "destination": "/Front-end/assets/search.html" },
+    { "source": "/book.html", "destination": "/Front-end/assets/book.html" },
+    { "source": "/about.html", "destination": "/Front-end/assets/about.html" },
+    { "source": "/help.html", "destination": "/Front-end/assets/help.html" },
+    { "source": "/profile.html", "destination": "/Front-end/assets/profile.html" },
     { "source": "/css/:path*", "destination": "/Front-end/assets/css/:path*" },
     { "source": "/js/:path*", "destination": "/Front-end/assets/js/:path*" }
   ]
