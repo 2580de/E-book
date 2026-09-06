@@ -1,48 +1,47 @@
-// ============================================================
-// Bookhub — app logic
-// Stubbed functions. Wire these up once Supabase tables exist.
-// Suggested tables (see README.md for schema):
-//   profiles(id, selected_categories text[], selected_formats text[])
-//   books(id, title, author, category, format, cover_url, blurb)
-//   articles(id, title, kind, published_at, url)
-// ============================================================
-
+// Bookhub — shared frontend data and UI helpers.
 import { supabase } from './supabaseClient.js';
 
-// --- categories.html: save a user's chosen interests -------
 export async function saveInterests(userId, categories, formats) {
+  if (!userId) return { data: null, error: new Error('A signed-in user is required to save interests.') };
   const { data, error } = await supabase
     .from('profiles')
-    .upsert({ id: userId, selected_categories: categories, selected_formats: formats });
-
+    .update({ selected_categories: categories, selected_formats: formats })
+    .eq('id', userId)
+    .select()
+    .single();
   if (error) console.error('Could not save interests:', error.message);
-  return data;
+  return { data, error };
 }
 
-// --- search.html: query books/articles by keyword ----------
-export async function searchLibrary(query) {
-  const { data, error } = await supabase
-    .from('books')
-    .select('*')
-    .ilike('title', `%${query}%`);
-
+export async function searchLibrary(query = '') {
+  const term = query.trim();
+  let request = supabase.from('books').select('*').order('created_at', { ascending: false });
+  if (term) request = request.or(`title.ilike.%${term}%,author.ilike.%${term}%,description.ilike.%${term}%`);
+  const { data, error } = await request;
   if (error) {
     console.error('Search failed:', error.message);
     return [];
   }
-  return data;
+  return data ?? [];
 }
 
-// --- index.html: fetch picks for the home feed --------------
 export async function getFeaturedBooks(limit = 4) {
   const { data, error } = await supabase
     .from('books')
     .select('*')
+    .order('created_at', { ascending: false })
     .limit(limit);
-
   if (error) {
     console.error('Could not load featured books:', error.message);
     return [];
   }
-  return data;
+  return data ?? [];
+}
+
+export function escapeHtml(value = '') {
+  return String(value).replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
+}
+
+export function formatLabel(value = 'ebook') {
+  return String(value).replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
