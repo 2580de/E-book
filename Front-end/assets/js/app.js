@@ -2,15 +2,11 @@
 import { supabase } from './supabase.js';
 
 export async function saveInterests(userId, categories, formats) {
-  if (!userId) return { data: null, error: new Error('A signed-in user is required to save interests.') };
-  const { data, error } = await supabase
-    .from('profiles')
-    .update({ selected_categories: categories, selected_formats: formats })
-    .eq('id', userId)
-    .select()
-    .single();
-  if (error) console.error('Could not save interests:', error.message);
-  return { data, error };
+  // The current live profiles table does not yet contain preference columns.
+  // Keep preferences local until an authenticated profile migration is introduced.
+  const preferences = { userId: userId ?? null, categories, formats, savedAt: new Date().toISOString() };
+  localStorage.setItem('bookhubPreferences', JSON.stringify(preferences));
+  return { data: preferences, error: null };
 }
 
 export async function searchLibrary(query = '') {
@@ -26,11 +22,7 @@ export async function searchLibrary(query = '') {
 }
 
 export async function getFeaturedBooks(limit = 4) {
-  const { data, error } = await supabase
-    .from('books')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(limit);
+  const { data, error } = await supabase.from('books').select('*').order('created_at', { ascending: false }).limit(limit);
   if (error) {
     console.error('Could not load featured books:', error.message);
     return [];
@@ -80,6 +72,7 @@ export async function mountSearch() {
   const shelf = document.querySelector('#search-results');
   const count = document.querySelector('#search-count');
   if (!form || !input || !shelf) return;
+  input.value = new URLSearchParams(window.location.search).get('q') ?? '';
   const run = async () => {
     const books = await searchLibrary(input.value);
     shelf.innerHTML = books.length ? books.map(resultRow).join('') : '<p class="empty-state">No matching books found.</p>';
@@ -98,8 +91,4 @@ export async function mountBook() {
   root.innerHTML = `<div class="book-detail-cover">${book.cover_image_url ? `<img src="${escapeHtml(book.cover_image_url)}" alt="Cover of ${escapeHtml(book.title)}">` : ''}</div><div><p class="hero-eyebrow">${escapeHtml(formatLabel(book.format))}</p><h1>${escapeHtml(book.title)}</h1><p class="book-author">${escapeHtml(book.author ?? 'Unknown author')}</p><p>${escapeHtml(book.description ?? 'No description available yet.')}</p>${book.content_url ? `<a class="btn btn-amber" href="${escapeHtml(book.content_url)}" target="_blank" rel="noopener">Open content</a>` : ''}</div>`;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  mountHome();
-  mountSearch();
-  mountBook();
-});
+document.addEventListener('DOMContentLoaded', () => { mountHome(); mountSearch(); mountBook(); });
