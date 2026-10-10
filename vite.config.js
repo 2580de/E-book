@@ -1,7 +1,10 @@
 import { defineConfig } from 'vite';
+import { resolve } from 'node:path';
+
+const assets = resolve(process.cwd(), 'Front-end/assets');
 
 export default defineConfig({
-  root: 'Front-end/assets',
+  root: assets,
   publicDir: false,
   server: {
     host: true,
@@ -10,5 +13,14 @@ export default defineConfig({
   build: {
     outDir: '../../dist',
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: resolve(assets, 'index.html'),
+        categories: resolve(assets, 'categories.html'),
+        search: resolve(assets, 'search.html'),
+        library: resolve(assets, 'library.html'),
+        book: resolve(assets, 'book.html'),
+      },
+    },
   },
 });
