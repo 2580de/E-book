@@ -1,9 +1,9 @@
 import 'dotenv/config';
 import { defineConfig, env } from 'prisma/config';
 
-// Prisma 7 keeps the datasource connection URL in this config file.
-// DIRECT_URL should be the Supabase session-mode pooler connection used
-// for introspection and migrations. Runtime code uses DATABASE_URL.
+// Prisma 7 reads its CLI connection URL from this file.
+// DIRECT_URL is the Supavisor session-mode pooler (port 5432).
+// The runtime adapter in Back-end/db/client.ts uses DATABASE_URL.
 export default defineConfig({
   schema: 'Back-end/prisma/schema.prisma',
   migrations: {
