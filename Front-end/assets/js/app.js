@@ -60,12 +60,15 @@ export async function saveInterests(userId, categories, formats) {
   return data;
 }
 
+// Alias database columns to the stable frontend field names used by cards.
+const BOOK_FIELDS = 'id,title,author,category,format,cover_url:cover_image_url,blurb:description';
+
 export async function searchLibrary(query, { limit = 30 } = {}) {
   if (!supabase || !query?.trim()) return [];
   const term = query.trim().replaceAll(',', ' ');
   const { data, error } = await supabase
     .from('books')
-    .select('id,title,author,category,format,cover_url,blurb')
+    .select(BOOK_FIELDS)
     .or(`title.ilike.%${term}%,author.ilike.%${term}%,category.ilike.%${term}%`)
     .limit(limit);
   if (error) throw error;
@@ -76,7 +79,7 @@ export async function getFeaturedBooks(limit = 8) {
   if (!supabase) return [];
   const { data, error } = await supabase
     .from('books')
-    .select('id,title,author,category,format,cover_url,blurb')
+    .select(BOOK_FIELDS)
     .order('title', { ascending: true })
     .limit(limit);
   if (error) throw error;
