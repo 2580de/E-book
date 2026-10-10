@@ -29,9 +29,10 @@ vercel.json                      # Vercel clean routes
 ## Data flow and security boundaries
 
 1. **Browser authentication and reads:** Vite injects only `VITE_SUPABASE_URL` and the Supabase publishable key. Supabase Auth manages sessions; PostgREST accesses public tables under Row Level Security.
-2. **User-owned data:** `profiles`, `bookmarks`, and `user_activity` must use RLS policies that bind rows to `auth.uid()`. A database trigger creates a profile after a new Auth user is created.
+2. **User-owned data:** `profiles`, `bookmarks`, and `user_activity` must use RLS policies that bind user-owned writes to `auth.uid()`. The existing database currently permits public reads of profiles; review that policy before treating profile fields as private. A database trigger in the migration creates a profile after a new Auth user is created.
 3. **Server-side ORM:** Prisma connects to the same Supabase PostgreSQL database through `Back-end/db/client.ts`. Never import the Prisma client into browser modules and never expose database URLs or passwords with a `VITE_` prefix.
-4. **Local-first shelf:** the current catalogue's saved items, recent views and progress still use localStorage. Cross-device bookmark/progress sync requires explicit UI integration with the existing `bookmarks` table and additional progress storage.
+4. **Existing profile visibility:** the current database has a public-read policy for profiles, plus owner-bound insert/update policies. Review that public-read policy before storing private profile fields there.
+5. **Local-first shelf:** the current catalogue's saved items, recent views and progress still use localStorage. Cross-device bookmark/progress sync requires explicit UI integration with the existing `bookmarks` table and additional progress storage.
 
 Supabase remains the source of truth; Prisma is an ORM, not a second database.
 
