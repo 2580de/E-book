@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12141C">
+  <meta name="description" content="Sign in to your Bookhub account.">
+  <title>Sign in — Bookhub</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <a class="brand auth-brand" href="index.html"><span class="dot" aria-hidden="true"></span>Bookhub</a>
+    <section class="auth-card" aria-labelledby="auth-title">
+      <p class="auth-eyebrow">Welcome back</p>
+      <h1 id="auth-title">Sign in to Bookhub</h1>
+      <p class="auth-intro">Continue exploring your reading shelf.</p>
+      <form id="login-form" class="auth-form">
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" autocomplete="email" required>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required>
+        <p id="auth-message" class="auth-message" role="status" aria-live="polite"></p>
+        <button class="btn btn-amber auth-submit" type="submit">Sign in</button>
+      </form>
+      <p class="auth-switch">New to Bookhub? <a href="create-account.html">Create an account</a></p>
+      <a class="auth-home" href="index.html">← Back to Bookhub</a>
+    </section>
+  </main>
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>
