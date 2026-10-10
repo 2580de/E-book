@@ -34,9 +34,11 @@ function readableError(error) {
   return text;
 }
 
+const CONFIG_MESSAGE = 'Authentication is not configured yet. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in the local or Vercel environment.';
+
 loginForm?.addEventListener('submit', async (event) => {
   event.preventDefault();
-  if (!supabase) { showMessage('Authentication is not configured yet. Add the VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.', 'error'); return; }
+  if (!supabase) { showMessage(CONFIG_MESSAGE, 'error'); return; }
   const form = new FormData(loginForm);
   setSubmitting(loginForm, true, 'Signing in…');
   showMessage('');
@@ -62,7 +64,7 @@ createForm?.addEventListener('submit', async (event) => {
   if (password.length < 8) { showMessage('Your password must be at least 8 characters.', 'error'); return; }
   if (password !== confirmPassword) { showMessage('The passwords do not match.', 'error'); return; }
   if (!form.get('terms')) { showMessage('Please accept the terms to continue.', 'error'); return; }
-  if (!supabase) { showMessage('Authentication is not configured yet. Add the VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.', 'error'); return; }
+  if (!supabase) { showMessage(CONFIG_MESSAGE, 'error'); return; }
   setSubmitting(createForm, true, 'Creating account…');
   showMessage('');
   try {
