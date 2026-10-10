@@ -7,6 +7,10 @@
       "destination": "/index.html"
     },
     {
+      "source": "/discover",
+      "destination": "/discover.html"
+    },
+    {
       "source": "/categories",
       "destination": "/categories.html"
     },
