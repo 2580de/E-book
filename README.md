@@ -92,3 +92,22 @@ For changes involving RLS policies, functions, extensions or other Supabase-spec
 ## Deployment
 
 Vercel can build the Vite application with `npm run build` and serve `dist/`. Configure the `VITE_SUPABASE_*` variables in the Vercel project. Configure database credentials only where server-side Prisma code actually runs.
+
+
+## Bookhub discovery flow (current front-end)
+
+The static Vite front end now includes a complete discovery loop that shares the existing deep-ink, gold and moss design system:
+
+- `index.html`: home discovery page and featured recommendations.
+- `categories.html`: category and preferred-format selection, saved to local UI state.
+- `search.html`: live title/author/topic search, content-type and category filters, length filters, sorting, and save actions.
+- `book.html?id=<catalogue-id>`: reusable title detail view, sample/availability note, save action, and local reading-progress slider.
+- `library.html`: saved items, recent views and reading progress from the current browser's local storage.
+- `css/style.css`: shared responsive tokens and components; page additions continue to use the shared variables rather than introducing a second theme.
+- `js/catalog.js`, `js/search.js`, `js/book.js`, `js/library.js`: catalogue data and front-end interactions.
+
+### Local-first behavior and current limits
+
+The front-end catalogue is sample/demo data so the navigation and personal shelf work before a live content catalogue is connected. Saved titles, recent views, and progress are stored in browser local storage; they are not account-synced and do not automatically transfer between devices. The detail page does not claim to stream licensed books, audio or video. Real catalogue data and authenticated cross-device state require configured Supabase tables, policies and application integration.
+
+The existing Supabase + PostgreSQL + Prisma architecture remains the intended cloud data path. Keep browser-safe `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` separate from server-only `DATABASE_URL` and `DIRECT_URL`; never expose service-role keys or database credentials in the front end.
