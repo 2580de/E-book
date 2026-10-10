@@ -152,3 +152,15 @@ img { display: block; max-width: 100%; }
 .auth-terms{font-size:10px;line-height:1.6;color:#A98290;margin-top:4px}.auth-card-foot{border-top:1px solid rgba(255,255,255,.1);padding-top:16px;margin-top:18px;display:grid;gap:7px;font-size:11px;color:var(--paper-dim)}.auth-card-foot a{color:#FF91A7}.auth-footer{display:flex;justify-content:space-between;gap:14px;padding:12px 0 28px;color:#8F6C79;font:9px var(--mono);letter-spacing:.09em}
 @media(max-width:900px){.auth-layout{grid-template-columns:1fr;max-width:680px}.auth-intro h1{font-size:clamp(44px,10vw,68px)}.auth-samples{max-width:520px}.auth-card{max-width:560px;width:100%;justify-self:center}.auth-showcase-label{margin-top:28px}}
 @media(max-width:560px){.auth-top{width:calc(100% - 28px);min-height:64px}.auth-skip{font-size:11px;padding:8px 10px}.auth-layout{padding-top:22px;gap:30px}.auth-lede{font-size:14px}.auth-benefits{gap:7px}.auth-benefits span{font-size:10px}.auth-samples{gap:8px}.sample-tile{min-height:148px;padding:10px;border-radius:9px}.sample-format{font-size:8px;top:9px;left:9px}.sample-tile strong{font-size:16px}.sample-tile small{font-size:9px}.sample-play{width:31px;height:31px}.auth-card{padding:22px 18px;border-radius:17px}.auth-footer{font-size:8px}}
+
+/* Book-cover artwork uses CSS so every sample remains fast and responsive */
+.book-cover.cover-art,.detail-cover.cover-art{isolation:isolate;background:linear-gradient(145deg,#512132,#21131A);color:#fff1f3}
+.book-cover.cover-art:before,.detail-cover.cover-art:before{width:5px;opacity:.9;background:rgba(255,255,255,.6)}
+.book-cover.cover-art:after,.detail-cover.cover-art:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(16,9,13,.02),rgba(16,9,13,.08) 35%,rgba(16,9,13,.88))}
+.book-cover.cover-art.moss,.detail-cover.cover-art.moss{background:radial-gradient(circle at 68% 22%,rgba(255,204,184,.8),transparent 24%),linear-gradient(140deg,#a13d59,#512132 60%,#201018)}
+.book-cover.cover-art.rust,.detail-cover.cover-art.rust{background:radial-gradient(circle at 58% 24%,rgba(255,124,146,.72),transparent 28%),linear-gradient(150deg,#472138,#9d254b 54%,#1d111b)}
+.book-cover.cover-art.amber,.detail-cover.cover-art.amber{background:radial-gradient(ellipse at 32% 24%,rgba(255,220,192,.7),transparent 25%),linear-gradient(135deg,#7f263e,#e05d77 52%,#351523)}
+.cover-title{position:relative;z-index:1;font:600 clamp(17px,2vw,25px)/1.05 var(--serif);letter-spacing:-.02em;color:#fff4f6;max-width:100%;overflow-wrap:anywhere}
+.cover-play{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.55);border-radius:50%;background:rgba(255,255,255,.16);backdrop-filter:blur(8px);font-size:12px;color:white}
+.detail-cover.cover-art{min-height:320px}
+.detail-cover.cover-art .cover-title{font-size:clamp(24px,3vw,38px)}
