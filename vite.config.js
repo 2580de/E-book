@@ -20,6 +20,8 @@ export default defineConfig({
         search: resolve(assets, 'search.html'),
         library: resolve(assets, 'library.html'),
         book: resolve(assets, 'book.html'),
+        login: resolve(assets, 'login.html'),
+        createAccount: resolve(assets, 'create-account.html'),
       },
     },
   },
