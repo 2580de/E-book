@@ -9,34 +9,53 @@ datasource db {
   provider = "postgresql"
 }
 
-// Supabase Auth owns auth.users. Prisma models the public application
-// tables and keeps auth-owned UUIDs as scalar fields.
-
+// Supabase Auth owns auth.users. This model maps only the public profile table.
 model Profile {
   id                 String   @id @db.Uuid
-  selectedCategories String[] @map("selected_categories")
-  selectedFormats    String[] @map("selected_formats")
+  username           String?  @unique
+  fullName           String?  @map("full_name")
+  avatarUrl          String?  @map("avatar_url")
+  selectedCategories String[] @default([]) @map("selected_categories")
+  selectedFormats    String[] @default([]) @map("selected_formats")
+  createdAt          DateTime @default(dbgenerated("timezone('utc'::text, now())")) @map("created_at")
   @@map("profiles")
 }
 
 model Book {
-  id        String   @id @default(uuid()) @db.Uuid
-  title     String
-  author    String?
-  category  String?
-  format    String?
-  coverUrl  String?  @map("cover_url")
-  blurb     String?
+  id             String   @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  title          String
+  author         String
+  description    String?
+  category       String
+  format         String   @default("ebook")
+  coverImageUrl  String?  @map("cover_image_url")
+  contentUrl     String?  @map("content_url")
+  publishedYear  Int?     @map("published_year")
+  createdAt      DateTime @default(dbgenerated("timezone('utc'::text, now())")) @map("created_at")
   @@map("books")
 }
 
 model Article {
-  id          String   @id @default(uuid()) @db.Uuid
-  title       String
-  kind        String?
-  publishedAt DateTime @default(now()) @map("published_at")
-  url         String?
+  id        String   @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  title     String
+  author    String?
+  content   String
+  category  String?
+  imageUrl  String?  @map("image_url")
+  createdAt DateTime @default(dbgenerated("timezone('utc'::text, now())")) @map("created_at")
   @@map("articles")
+}
+
+model Bookmark {
+  id        String   @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  bookId    String?  @map("book_id") @db.Uuid
+  articleId String?  @map("article_id") @db.Uuid
+  createdAt DateTime @default(dbgenerated("timezone('utc'::text, now())")) @map("created_at")
+  @@index([userId])
+  @@index([bookId])
+  @@index([articleId])
+  @@map("bookmarks")
 }
 
 model UserSession {
@@ -76,7 +95,7 @@ model UserActivity {
 model UserData {
   userId    String   @map("user_id") @db.Uuid
   dataKey   String   @map("data_key")
-  dataValue Json     @map("data_value")
+  dataValue Json     @default("{}")
   updatedAt DateTime @default(now()) @map("updated_at")
   @@id([userId, dataKey])
   @@map("user_data")

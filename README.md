@@ -1,127 +1,77 @@
 # Bookhub
 
-Bookhub is a responsive discovery platform for books, audiobooks, video books and articles, with personalized interests and synchronized user state.
+Bookhub is a responsive discovery platform for books, audiobooks, video books, and articles. The application is being moved to **Next.js App Router** while preserving the existing catalogue, Supabase/Postgres data direction, and Prisma schema.
 
-## V2 architecture
+## Application architecture
 
 ```text
-Front-end/assets/
-├── index.html
-├── categories.html
-├── search.html
-├── css/
-│   └── style.css                 # shared fluid design system
-└── js/
-    ├── main.js                   # one UI bootstrap entry
-    ├── ui.js                     # navigation, reveal, busy states, a11y helpers
-    ├── sync.js                   # localStorage + cross-tab UI synchronization
-    ├── supabaseClient.js         # browser-safe Supabase client
-    └── app.js                    # data/auth/realtime application layer
-
+app/
+├── layout.tsx             # global metadata and shared CSS
+├── page.tsx               # account, preference onboarding, and discovery UI
+└── globals.css            # responsive dark-denim design system
+lib/
+└── supabase.ts            # browser-safe Supabase client
 Back-end/
-├── db/client.ts                  # Prisma 7 + pg adapter, pooled runtime connection
-└── prisma/
-    └── schema.prisma             # canonical Prisma representation of public tables
-
-prisma.config.ts                  # Prisma CLI uses DIRECT_URL
-vite.config.js                    # Vite root/build configuration
-vercel.json                       # Vercel routing
-.env.example                      # browser-safe + server-only variables
+├── prisma/schema.prisma   # Prisma representation of public application tables
+└── supabase/              # SQL source for policies/functions/migrations
+prisma.config.ts           # Prisma CLI configuration
+next.config.ts             # Next.js configuration
+.env.example               # environment variable names only
 ```
 
-## Synchronization model
+### Data ownership
 
-There are three layers, intentionally separated:
+- **GitHub** stores source code and history.
+- **Vercel** builds and hosts the Next.js application.
+- **Supabase Auth** owns identities and sessions.
+- **Supabase PostgreSQL** is the source of truth for account-owned profiles, catalogue records, and future cross-device library data.
+- **Prisma** is the server-side ORM for PostgreSQL; it is not a second database. Do not import database credentials or server Prisma code into browser components.
+- The current sample catalogue and saved-title preview are demo data. Saved titles currently use browser local storage; account-synced bookmarks and reading progress require dedicated tables and verified Row Level Security policies.
 
-1. **UI state:** `sync.js` persists non-sensitive preferences locally and synchronizes changes between browser tabs with the `storage` event.
-2. **Cloud user state:** `app.js` uses Supabase Auth + Postgres and subscribes to `profiles` through Supabase Realtime, so profile changes can update an open client without a reload.
-3. **Server data access:** Prisma is server-side only. The browser never receives `DATABASE_URL` or `DIRECT_URL`.
+## Local development with Termux
 
-Supabase remains the source of truth for authenticated user data. Prisma is the type-safe server ORM over the same Supabase PostgreSQL database; it does not create a second database.
-
-## Prisma 7 + Supabase PostgreSQL
-
-Prisma ORM 7 uses the `prisma-client` generator and requires a custom generated output path. It also requires a driver adapter for direct relational database connections. This repository uses `@prisma/adapter-pg` and `pg`. See the official Prisma v7 documentation for the generator and adapter model.
-
-The connection split is deliberate:
-
-- `DATABASE_URL` = Supabase transaction pooler / Supavisor connection for the application runtime.
-- `DIRECT_URL` = direct database connection for Prisma CLI introspection and schema operations.
-
-The browser only receives `VITE_SUPABASE_URL` and the public/anon key. Never prefix database passwords or service-role secrets with `VITE_`.
-
-### Sync an existing Supabase schema into Prisma
+Install Node.js 22 or later and Git in Termux, then clone the repository and switch to the feature branch:
 
 ```bash
+pkg update && pkg upgrade -y
+pkg install git nodejs-lts -y
+gh auth login
+gh repo clone 2580de/E-book
+cd E-book
+git switch feat/nextjs-bookhub-foundation
 npm install
-npm run db:pull
-npm run db:generate
-npm run db:validate
-```
-
-After changing the database schema in Supabase, run `npm run db:sync` to pull the live PostgreSQL schema and regenerate Prisma Client.
-
-## Frontend development
-
-```bash
-npm install
+cp .env.example .env.local
 npm run dev
 ```
 
-Vite serves `Front-end/assets` as the project root. The output is written to `dist/` for deployment.
+Open the local address printed by Next.js. In Acode, open the same `E-book` folder; edits saved in Acode are visible to Git in Termux because both operate on the same directory. Do not keep a second independent copy of the project if you expect changes to synchronize.
 
-Create `.env.local` from `.env.example` and set the two `VITE_SUPABASE_*` values. Keep `DATABASE_URL` and `DIRECT_URL` server-side.
+If you prefer Ubuntu through proot, use `proot-distro login ubuntu --shared-home`; the shared Termux home is available inside Ubuntu. Install a compatible Node.js 22+ release there before running `npm install`.
 
-## Database ownership
+## Environment configuration
 
-Supabase Auth owns `auth.users`. Application tables live in `public` and are protected with Row Level Security where user-owned data is exposed to the browser. Prisma models the application tables but does not attempt to manage `auth.users`.
+Set these values in `.env.local` for local development and in Vercel project environment settings for Preview/Production:
 
-For changes involving RLS policies, functions, extensions or other Supabase-specific SQL, update the SQL source in `Back-end/supabase/` and then introspect with Prisma. This avoids hiding PostgreSQL/Supabase security behavior inside ORM-only definitions.
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` (publishable/anon key only)
 
-## Quality targets
+The Prisma CLI may also require server-only `DATABASE_URL` and `DIRECT_URL`. Never place database passwords, service-role keys, or other secrets in variables prefixed with `NEXT_PUBLIC_`, source control, screenshots, or chat messages.
 
-- Fluid layouts from 320px upward.
-- Shared CSS tokens and reusable UI primitives instead of page-specific styling duplication.
-- Reduced-motion support and visible keyboard focus.
-- Responsive navigation without a framework dependency.
-- Realtime profile synchronization plus cross-tab local-state synchronization.
-- Pooled PostgreSQL connections for server runtime.
-- Prisma schema validation and regeneration after database changes.
-- No database credentials in browser bundles.
+Enable Email authentication in Supabase. To enable Google sign-in, configure the Google provider in Supabase Auth and add the correct deployed origin/callback URLs to Supabase and Google Cloud.
 
-## Deployment
+## Database safety and next implementation steps
 
-Vercel can build the Vite application with `npm run build` and serve `dist/`. Configure the `VITE_SUPABASE_*` variables in the Vercel project. Configure database credentials only where server-side Prisma code actually runs.
+Before enabling persistent user data in production, audit the live Supabase tables and policies. In particular, verify that each user can read/write only their own profile, and that bookmarks, progress, uploads, and activity tables have explicit access policies. Do not run schema migrations against production until the current schema and migration history have been reviewed.
 
+Recommended implementation sequence:
+1. Review current Supabase schema, RLS policies, and Vercel project settings.
+2. Finish and verify Next.js build in a preview deployment.
+3. Confirm authentication, email confirmation, and Google OAuth redirect settings.
+4. Persist preferences through `profiles` after verifying its schema and policies.
+5. Add account-owned bookmarks and reading progress with RLS.
+6. Add book submission/moderation, storage policies, and licensed media providers.
+7. Test account isolation, reload persistence, mobile layout, and production logs.
 
-## Bookhub discovery flow (current front-end)
+## Sample catalogue disclaimer
 
-The static Vite front end now includes a complete discovery loop that shares the existing deep-ink, gold and moss design system:
-
-- `index.html`: home discovery page and featured recommendations.
-- `categories.html`: category and preferred-format selection, saved to local UI state.
-- `search.html`: live title/author/topic search, content-type and category filters, length filters, sorting, and save actions.
-- `book.html?id=<catalogue-id>`: reusable title detail view, sample/availability note, save action, and local reading-progress slider.
-- `library.html`: saved items, recent views and reading progress from the current browser's local storage.
-- `css/style.css`: shared responsive tokens and components; page additions continue to use the shared variables rather than introducing a second theme.
-- `js/catalog.js`, `js/search.js`, `js/book.js`, `js/library.js`: catalogue data and front-end interactions.
-
-### Local-first behavior and current limits
-
-The front-end catalogue is sample/demo data so the navigation and personal shelf work before a live content catalogue is connected. Saved titles, recent views, and progress are stored in browser local storage; they are not account-synced and do not automatically transfer between devices. The detail page does not claim to stream licensed books, audio or video. Real catalogue data and authenticated cross-device state require configured Supabase tables, policies and application integration.
-
-The existing Supabase + PostgreSQL + Prisma architecture remains the intended cloud data path. Keep browser-safe `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` separate from server-only `DATABASE_URL` and `DIRECT_URL`; never expose service-role keys or database credentials in the front end.
-
-## First-run account and rose-glass UI
-
-The root route opens the account-first welcome page in `Front-end/assets/index.html`. Users can sign in with email/password, create an account, or continue with Google. The former discovery homepage is now `Front-end/assets/discover.html`; sample book, audiobook, and video-book covers link to their detail pages.
-
-### Authentication setup
-
-1. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel's project environment variables (and in `.env.local` for local development).
-2. In Supabase Authentication, enable Email and configure email confirmation to match your desired onboarding flow.
-3. To enable the Google button, configure the Google provider in Supabase Authentication with the Google OAuth client credentials.
-4. Add your deployed Bookhub origin and the Supabase Auth callback URL to the allowed redirect URLs in Supabase and Google Cloud. Bookhub returns to `/discover.html` after successful OAuth.
-5. Redeploy after changing environment variables.
-
-If Supabase is not configured, the welcome screen explains the missing configuration and the sample catalogue remains available through the guest browse link. The book and audiobook cards are illustrative sample catalogue entries; the detail page does not stream licensed content until a content provider is connected.
+The included catalogue entries and CSS-generated covers are illustrative. This app does not stream licensed full books, audio, or video unless a content provider and the corresponding rights are connected.
