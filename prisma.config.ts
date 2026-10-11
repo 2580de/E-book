@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { defineConfig, env } from 'prisma/config';
+import { defineConfig } from 'prisma/config';
 
 export default defineConfig({
   schema: 'Back-end/prisma/schema.prisma',
@@ -7,6 +7,8 @@ export default defineConfig({
     path: 'Back-end/prisma/migrations',
   },
   datasource: {
-    url: env('DIRECT_URL'),
+    // Generation and validation do not connect to the database. A real URL is
+    // required only for database operations; this fallback is never a secret.
+    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@localhost:5432/postgres',
   },
 });
