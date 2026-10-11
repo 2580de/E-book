@@ -5,6 +5,7 @@
   "description": "Bookhub — personalized discovery for books, audiobooks, video books and articles.",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run db:generate",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -29,7 +30,7 @@
     "@types/react-dom": "^19.1.9",
     "dotenv": "^17.2.2",
     "eslint": "^9.35.0",
-    "eslint-config-next": "^15.5.4",
+    "eslint-config-next": "^15.5.0",
     "prisma": "^7.10.0",
     "typescript": "^5.9.2"
   }
