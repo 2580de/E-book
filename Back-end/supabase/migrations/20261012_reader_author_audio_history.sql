@@ -31,8 +31,6 @@ drop policy if exists "Participants can read direct messages" on public.direct_m
 create policy "Participants can read direct messages" on public.direct_messages for select to authenticated using(auth.uid()=sender_id or auth.uid()=recipient_id);
 drop policy if exists "Senders can send direct messages" on public.direct_messages;
 create policy "Senders can send direct messages" on public.direct_messages for insert to authenticated with check(auth.uid()=sender_id and auth.uid()<>recipient_id);
-drop policy if exists "Recipients can mark messages read" on public.direct_messages;
-create policy "Recipients can mark messages read" on public.direct_messages for update to authenticated using(auth.uid()=recipient_id) with check(auth.uid()=recipient_id);
 drop policy if exists "Users can manage their own reading history" on public.reading_history;
 create policy "Users can manage their own reading history" on public.reading_history for all to authenticated using(auth.uid()=user_id) with check(auth.uid()=user_id);
 alter table public.profiles enable row level security;
