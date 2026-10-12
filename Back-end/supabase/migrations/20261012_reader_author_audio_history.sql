@@ -33,6 +33,7 @@ drop policy if exists "Senders can send direct messages" on public.direct_messag
 create policy "Senders can send direct messages" on public.direct_messages for insert to authenticated with check(auth.uid()=sender_id and auth.uid()<>recipient_id);
 drop policy if exists "Users can manage their own reading history" on public.reading_history;
 create policy "Users can manage their own reading history" on public.reading_history for all to authenticated using(auth.uid()=user_id) with check(auth.uid()=user_id);
-alter table public.profiles enable row level security;
-drop policy if exists "Authenticated users can discover profiles" on public.profiles;
-create policy "Authenticated users can discover profiles" on public.profiles for select to authenticated using(true);
+-- Expose only identity fields through a narrow view; profile preferences remain private.
+create or replace view public.community_profiles as
+ select id, username, full_name, avatar_url from public.profiles;
+grant select on public.community_profiles to authenticated;
